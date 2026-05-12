@@ -45,7 +45,7 @@ class KLP_Checkout {
             'morning_label' => esc_html($settings['morning_label']),
             'afternoon_label' => esc_html($settings['afternoon_label']),
             'date_format' => 'dd-mm-yy',
-            'min_date' => date('d-m-Y', strtotime('+1 day', current_time('timestamp'))),
+            'min_date' => self::calc_min_date((int) $settings['min_lead_hours']),
             'nonce' => wp_create_nonce('klp_checkout'),
         ]);
     }
@@ -116,9 +116,13 @@ class KLP_Checkout {
             return;
         }
 
-        $min_date = strtotime('+1 day', current_time('timestamp'));
-        if (strtotime($date_ymd) < $min_date) {
-            $errors->add('klp_delivery_date', __('De leverdag moet minimaal morgen zijn.', 'kolenbrander-leveringsplanner'));
+        $cutoff = (int) KLP_Settings::get('min_lead_hours');
+        $min_date_ymd = self::calc_min_date($cutoff, 'Y-m-d');
+        if ($date_ymd < $min_date_ymd) {
+            $errors->add('klp_delivery_date', sprintf(
+                __('Deze leverdag is niet meer beschikbaar. Vroegste leverdag: %s.', 'kolenbrander-leveringsplanner'),
+                date_i18n('l d F Y', strtotime($min_date_ymd))
+            ));
         }
     }
 
@@ -159,6 +163,14 @@ class KLP_Checkout {
         } elseif ($requested) {
             echo '<p><em>' . esc_html__('Container is aangemeld voor ophalen.', 'kolenbrander-leveringsplanner') . '</em></p>';
         }
+    }
+
+    public static function calc_min_date($cutoff_hour, $format = 'd-m-Y') {
+        $now = new DateTime('now', wp_timezone());
+        $days = (int) $now->format('H') >= $cutoff_hour ? 2 : 1;
+        $now->setTime(0, 0, 0);
+        $now->modify("+{$days} days");
+        return $now->format($format);
     }
 
     public static function parse_date($date_str) {

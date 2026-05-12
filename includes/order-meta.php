@@ -13,8 +13,12 @@ class KLP_Order_Meta {
     const ESCALATED_REMINDER_SENT_KEY = '_klp_escalated_reminder_sent';
 
     public static function init() {
+        add_action('woocommerce_email_order_meta', [__CLASS__, 'add_delivery_to_wc_email'], 10, 3);
+        add_action('woocommerce_admin_order_data_after_order_details', [__CLASS__, 'admin_order_edit_delivery']);
         add_action('woocommerce_admin_order_data_after_order_details', [__CLASS__, 'admin_order_pickup_status']);
         add_action('woocommerce_admin_order_data_after_order_details', [__CLASS__, 'admin_order_gcal_status']);
+        add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_order_assets']);
+        add_action('wp_ajax_klp_update_delivery', [__CLASS__, 'ajax_update_delivery']);
         add_filter('manage_edit-shop_order_columns', [__CLASS__, 'add_pickup_column']);
         add_action('manage_shop_order_posts_custom_column', [__CLASS__, 'render_pickup_column'], 10, 2);
         add_filter('woocommerce_shop_order_list_table_columns', [__CLASS__, 'add_pickup_column']);
@@ -23,6 +27,106 @@ class KLP_Order_Meta {
         add_action('manage_shop_order_posts_custom_column', [__CLASS__, 'render_gcal_column'], 10, 2);
         add_filter('woocommerce_shop_order_list_table_columns', [__CLASS__, 'add_gcal_column']);
         add_action('woocommerce_shop_order_list_table_custom_column', [__CLASS__, 'render_gcal_column_hpos'], 10, 2);
+    }
+
+    public static function enqueue_order_assets($hook) {
+        $is_order_edit = ($hook === 'post.php' && !empty($_GET['post']) && get_post_type(absint($_GET['post'])) === 'shop_order')
+                      || ($hook === 'woocommerce_page_wc-orders' && !empty($_GET['id']));
+        if (!$is_order_edit) return;
+
+        wp_enqueue_style('jquery-ui-datepicker');
+        wp_enqueue_script('jquery-ui-datepicker');
+        wp_enqueue_script('klp-order', KLP_PLUGIN_URL . 'assets/js/order.js', ['jquery', 'jquery-ui-datepicker'], KLP_VERSION, true);
+        wp_localize_script('klp-order', 'klp_order', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('klp_update_delivery'),
+        ]);
+    }
+
+    public static function admin_order_edit_delivery($order) {
+        $order_id   = $order->get_id();
+        $date       = self::get_delivery_date($order_id);
+        $time_slot  = self::get_time_slot($order_id);
+        $settings   = KLP_Settings::get();
+        $date_display = $date ? date('d-m-Y', strtotime($date)) : '';
+        ?>
+        <p class="form-field form-field-wide">
+            <label><?php _e('Leverdag wijzigen:', 'kolenbrander-leveringsplanner'); ?></label>
+            <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                <input type="text" id="klp_edit_date"
+                       value="<?= esc_attr($date_display) ?>"
+                       placeholder="dd-mm-jjjj"
+                       autocomplete="off"
+                       data-order-id="<?= esc_attr($order_id) ?>"
+                       style="width:120px;">
+                <select id="klp_edit_time_slot">
+                    <option value="morning"   <?= selected($time_slot, 'morning',   false) ?>><?= esc_html($settings['morning_label']) ?></option>
+                    <option value="afternoon" <?= selected($time_slot, 'afternoon', false) ?>><?= esc_html($settings['afternoon_label']) ?></option>
+                </select>
+                <button type="button" id="klp_save_delivery" class="button">
+                    <?php _e('Opslaan', 'kolenbrander-leveringsplanner'); ?>
+                </button>
+            </span>
+            <span id="klp_delivery_feedback" style="display:none;margin-top:4px;font-size:12px;display:block;"></span>
+        </p>
+        <?php
+    }
+
+    public static function ajax_update_delivery() {
+        check_ajax_referer('klp_update_delivery', 'nonce');
+        if (!current_user_can('manage_woocommerce')) wp_die(-1);
+
+        $order_id  = absint($_POST['order_id'] ?? 0);
+        $date_raw  = sanitize_text_field($_POST['date'] ?? '');
+        $time_slot = sanitize_text_field($_POST['time_slot'] ?? '');
+
+        if (!$order_id) wp_send_json_error('Ongeldig bestelnummer.');
+
+        $date_ymd = KLP_Checkout::parse_date($date_raw);
+        if (!$date_ymd) wp_send_json_error('Ongeldige datum.');
+
+        if (!in_array($time_slot, ['morning', 'afternoon'])) wp_send_json_error('Ongeldig tijdvak.');
+
+        $order = wc_get_order($order_id);
+        if (!$order) wp_send_json_error('Bestelling niet gevonden.');
+
+        $order->update_meta_data(self::DATE_KEY, $date_ymd);
+        $order->update_meta_data(self::TIME_SLOT_KEY, $time_slot);
+        $order->save();
+
+        if (KLP_Google_Calendar::is_enabled()) {
+            $order->delete_meta_data('_klp_gcal_event_id');
+            $order->save();
+            KLP_Google_Calendar::sync_event($order_id);
+        }
+
+        $settings   = KLP_Settings::get();
+        $time_label = $time_slot === 'morning' ? $settings['morning_label'] : $settings['afternoon_label'];
+
+        wp_send_json_success([
+            'message' => 'Opgeslagen: ' . date_i18n('l d F Y', strtotime($date_ymd)) . ' — ' . $time_label,
+        ]);
+    }
+
+    public static function add_delivery_to_wc_email($order, $sent_to_admin, $plain_text) {
+        $order_id = $order->get_id();
+        $date = self::get_delivery_date($order_id);
+        if (!$date) return;
+
+        $settings = KLP_Settings::get();
+        $time_slot = self::get_time_slot($order_id);
+        $time_label = $time_slot === 'morning' ? $settings['morning_label'] : ($time_slot === 'afternoon' ? $settings['afternoon_label'] : $time_slot);
+        $date_formatted = date_i18n('l d F Y', strtotime($date));
+
+        if ($plain_text) {
+            echo "\nLeverdag: {$date_formatted}\nTijdvak: {$time_label}\n";
+        } else {
+            echo '<h2 style="color:#7f54b3;font-size:18px;font-weight:bold;margin:0 0 18px;">Levering</h2>';
+            echo '<table cellspacing="0" cellpadding="6" style="width:100%;border:1px solid #eee;margin-bottom:20px;">';
+            echo '<tr><th style="text-align:left;padding:8px;border-bottom:1px solid #eee;">Leverdag</th><td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html($date_formatted) . '</td></tr>';
+            echo '<tr><th style="text-align:left;padding:8px;">Tijdvak</th><td style="padding:8px;">' . esc_html($time_label) . '</td></tr>';
+            echo '</table>';
+        }
     }
 
     public static function admin_order_pickup_status($order) {

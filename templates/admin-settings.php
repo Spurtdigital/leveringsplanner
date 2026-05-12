@@ -50,6 +50,13 @@
                                 <th><label for="max_per_day">Max leveringen per dag</label></th>
                                 <td><input type="number" id="max_per_day" name="klp_settings[max_per_day]" value="<?= esc_attr($s['max_per_day']) ?>" min="1" class="small-text"></td>
                             </tr>
+                            <tr>
+                                <th><label for="min_lead_hours">Minimale bestelvoorsprong (uren)</label></th>
+                                <td>
+                                    <input type="number" id="min_lead_hours" name="klp_settings[min_lead_hours]" value="<?= esc_attr($s['min_lead_hours'] ?? 17) ?>" min="0" max="23" class="small-text"> :00
+                                    <p class="description">Bestelstop: na dit uur is morgen niet meer selecteerbaar. Standaard 17 = na 17:00 is morgen niet beschikbaar, overmorgen de vroegste dag.</p>
+                                </td>
+                            </tr>
                         </table>
                     </div>
 
@@ -71,7 +78,7 @@
                             </tr>
                             <tr>
                                 <th><label for="admin_email">Dagoverzicht</label></th>
-                                <td><input type="email" id="admin_email" name="klp_settings[admin_email]" value="<?= esc_attr($s['admin_email']) ?>" class="regular-text"><p class="description">Ontvangt dagelijks om 07:00 een overzicht</p></td>
+                                <td><input type="text" id="admin_email" name="klp_settings[admin_email]" value="<?= esc_attr($s['admin_email']) ?>" class="regular-text" placeholder="email1@voorbeeld.nl, email2@voorbeeld.nl"><p class="description">Ontvangt dagelijks om 07:00 een overzicht. Meerdere adressen komma-gescheiden.</p></td>
                             </tr>
                             <tr>
                                 <th><label for="reminder_days_before">Herinnering (dagen voor levering)</label></th>

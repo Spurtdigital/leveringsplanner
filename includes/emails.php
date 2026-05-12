@@ -107,7 +107,7 @@ class KLP_Emails {
 
     public static function send_admin_summary($test = false) {
         $settings = KLP_Settings::get();
-        $to = $settings['admin_email'];
+        $to = array_filter(array_map('trim', explode(',', $settings['admin_email'])));
         $date_nice = date_i18n('l d F Y');
 
         $body = '<div style="font-family:Arial,Helvetica,sans-serif;color:#1d2327;">';

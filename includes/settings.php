@@ -24,6 +24,7 @@ class KLP_Settings {
             'max_per_day' => 200,
             'pickup_email' => 'ophalen@kolenbrandercontainers.nl',
             'admin_email' => get_option('admin_email'),
+            'min_lead_hours' => 17,
             'reminder_days_before' => 1,
             'pickup_reminder_days' => 7,
             'escalated_reminder_days' => 21,
@@ -136,12 +137,16 @@ We zorgen ervoor dat de container zo snel mogelijk bij je wordt opgehaald. Je on
         $out = $existing;
 
         if (isset($input['site_url'])) $out['site_url'] = esc_url_raw(rtrim(trim($input['site_url']), '/'));
+        if (isset($input['min_lead_hours'])) $out['min_lead_hours'] = absint($input['min_lead_hours']);
         if (isset($input['max_per_day'])) $out['max_per_day'] = absint($input['max_per_day']);
         if (isset($input['reminder_days_before'])) $out['reminder_days_before'] = absint($input['reminder_days_before']);
         if (isset($input['pickup_reminder_days'])) $out['pickup_reminder_days'] = absint($input['pickup_reminder_days']);
         if (isset($input['escalated_reminder_days'])) $out['escalated_reminder_days'] = absint($input['escalated_reminder_days']);
         if (isset($input['pickup_email'])) $out['pickup_email'] = sanitize_email($input['pickup_email']);
-        if (isset($input['admin_email'])) $out['admin_email'] = sanitize_email($input['admin_email']);
+        if (isset($input['admin_email'])) {
+            $emails = array_filter(array_map('sanitize_email', array_map('trim', explode(',', $input['admin_email']))));
+            $out['admin_email'] = implode(',', $emails);
+        }
         if (isset($input['morning_label'])) $out['morning_label'] = sanitize_text_field($input['morning_label']);
         if (isset($input['afternoon_label'])) $out['afternoon_label'] = sanitize_text_field($input['afternoon_label']);
         if (isset($input['closed_dates'])) $out['closed_dates'] = sanitize_textarea_field($input['closed_dates']);
