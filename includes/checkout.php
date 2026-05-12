@@ -63,7 +63,7 @@ class KLP_Checkout {
                 </label>
                 <input type="text" id="klp_delivery_date" name="klp_delivery_date"
                        placeholder="<?php esc_attr_e('Kies een datum...', 'kolenbrander-leveringsplanner'); ?>"
-                       class="input-text" autocomplete="off">
+                       class="input-text form-control" autocomplete="off">
             </p>
 
             <p class="form-row form-row-wide klp-time-field validate-required">
@@ -71,7 +71,7 @@ class KLP_Checkout {
                     <?php esc_html_e('Kies een tijdvak', 'kolenbrander-leveringsplanner'); ?>
                     <abbr class="required" title="verplicht">*</abbr>
                 </label>
-                <select id="klp_time_slot" name="klp_time_slot" class="input-select" disabled>
+                <select id="klp_time_slot" name="klp_time_slot" class="input-select form-select" disabled>
                     <option value=""><?php esc_html_e('Selecteer eerst een datum...', 'kolenbrander-leveringsplanner'); ?></option>
                     <option value="morning"><?= esc_html($settings['morning_label']); ?></option>
                     <option value="afternoon"><?= esc_html($settings['afternoon_label']); ?></option>

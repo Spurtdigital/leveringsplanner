@@ -189,7 +189,7 @@
                                 <td>
                                     <span class="klp-status-ok">&#10003; Verbonden</span>
                                     <?php if (!empty($s['gc_calendars'])): ?>
-                                    <select name="klp_settings[gc_calendar_id]">
+                                    <select name="klp_settings[gc_calendar_id]" class="form-select">
                                         <?php foreach ($s['gc_calendars'] as $id => $name): ?>
                                         <option value="<?= esc_attr($id) ?>" <?= selected($s['gc_calendar_id'], $id) ?>><?= esc_html($name) ?></option>
                                         <?php endforeach; ?>
