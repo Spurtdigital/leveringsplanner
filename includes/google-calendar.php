@@ -222,7 +222,7 @@ class KLP_Google_Calendar {
         $pickup_code = KLP_Order_Meta::get_pickup_code($order_id);
         if ($pickup_code) {
             $description .= "Ophaalcode: {$pickup_code}\n";
-            $description .= "Aanmeldlink: " . home_url('/aanmelden-ophalen/?code=' . urlencode($pickup_code)) . "\n";
+            $description .= "Aanmeldlink: " . KLP_Settings::pickup_url($pickup_code) . "\n";
         }
 
         $event = [

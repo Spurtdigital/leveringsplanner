@@ -23,6 +23,19 @@
                     <?php $s = KLP_Settings::get(); ?>
 
                     <div class="klp-section">
+                        <h2>Website</h2>
+                        <table class="form-table">
+                            <tr>
+                                <th><label for="site_url">Live website URL</label></th>
+                                <td>
+                                    <input type="url" id="site_url" name="klp_settings[site_url]" value="<?= esc_attr($s['site_url']) ?>" class="regular-text" placeholder="<?= esc_attr(home_url()) ?>">
+                                    <p class="description">Vul alleen in als je op een staging-omgeving werkt en de ophaallinks naar de live site moeten wijzen. Leeg = automatisch <code><?= esc_html(home_url()) ?></code>.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="klp-section">
                         <h2>Tijdvakken</h2>
                         <table class="form-table">
                             <tr>

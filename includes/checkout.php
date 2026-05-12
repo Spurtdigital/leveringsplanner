@@ -153,7 +153,7 @@ class KLP_Checkout {
         echo '<p><strong>' . esc_html__('Tijdvak:', 'kolenbrander-leveringsplanner') . '</strong> ' . esc_html($time_label) . '</p>';
 
         if (!$requested && $code) {
-            $url = home_url('/aanmelden-ophalen/?code=' . urlencode($code));
+            $url = KLP_Settings::pickup_url($code);
             echo '<p><strong>' . esc_html__('Container aanmelden voor ophalen:', 'kolenbrander-leveringsplanner') . '</strong><br>';
             echo '<a href="' . esc_url($url) . '" class="button">' . esc_html__('Meld uw container aan voor ophalen', 'kolenbrander-leveringsplanner') . '</a></p>';
         } elseif ($requested) {

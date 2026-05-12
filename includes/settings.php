@@ -18,6 +18,7 @@ class KLP_Settings {
 
     public static function get($key = null) {
         $defaults = [
+            'site_url' => '',
             'morning_label' => 'Ochtend (08:00 - 12:00)',
             'afternoon_label' => 'Middag (12:00 - 17:00)',
             'max_per_day' => 200,
@@ -134,6 +135,7 @@ We zorgen ervoor dat de container zo snel mogelijk bij je wordt opgehaald. Je on
         $existing = self::get();
         $out = $existing;
 
+        if (isset($input['site_url'])) $out['site_url'] = esc_url_raw(rtrim(trim($input['site_url']), '/'));
         if (isset($input['max_per_day'])) $out['max_per_day'] = absint($input['max_per_day']);
         if (isset($input['reminder_days_before'])) $out['reminder_days_before'] = absint($input['reminder_days_before']);
         if (isset($input['pickup_reminder_days'])) $out['pickup_reminder_days'] = absint($input['pickup_reminder_days']);
@@ -167,6 +169,12 @@ We zorgen ervoor dat de container zo snel mogelijk bij je wordt opgehaald. Je on
         }
 
         return $out;
+    }
+
+    public static function pickup_url($code) {
+        $base = self::get('site_url');
+        $base = $base ? $base : rtrim(home_url(), '/');
+        return $base . '/aanmelden-ophalen/?code=' . urlencode($code);
     }
 
     public static function ajax_test_gc() {

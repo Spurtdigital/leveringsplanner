@@ -217,7 +217,7 @@ class KLP_Emails {
             'delivery_date' => date_i18n('l d F Y', strtotime($date)),
             'time_slot' => $time_label,
             'days_before' => $settings['reminder_days_before'],
-            'pickup_url' => $code ? home_url('/aanmelden-ophalen/?code=' . urlencode($code)) : '',
+            'pickup_url' => $code ? KLP_Settings::pickup_url($code) : '',
         ];
 
         $body = self::resolve_body('email_body_reminder', $data);
@@ -239,7 +239,7 @@ class KLP_Emails {
         $data = [
             'customer_name' => $order->get_billing_first_name(),
             'order_number' => $order->get_order_number(),
-            'pickup_url' => $code ? home_url('/aanmelden-ophalen/?code=' . urlencode($code)) : '#',
+            'pickup_url' => $code ? KLP_Settings::pickup_url($code) : '#',
         ];
 
         $body = self::resolve_body('email_body_pickup', $data);
@@ -261,7 +261,7 @@ class KLP_Emails {
         $data = [
             'customer_name' => $order->get_billing_first_name(),
             'order_number' => $order->get_order_number(),
-            'pickup_url' => $code ? home_url('/aanmelden-ophalen/?code=' . urlencode($code)) : '#',
+            'pickup_url' => $code ? KLP_Settings::pickup_url($code) : '#',
         ];
 
         $body = self::resolve_body('email_body_pickup_escalated', $data);
@@ -355,7 +355,7 @@ class KLP_Emails {
             'address' => 'Hoofdstraat 1, 1234 AB Amsterdam',
             'phone' => '06-12345678',
             'email' => 'test@example.com',
-            'pickup_url' => home_url('/aanmelden-ophalen/?code=KL-9999-TEST'),
+            'pickup_url' => KLP_Settings::pickup_url('KL-9999-TEST'),
             'pickup_date' => current_time('d-m-Y H:i'),
             'days_before' => 1,
         ];
