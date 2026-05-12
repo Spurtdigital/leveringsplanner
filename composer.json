@@ -1,0 +1,6 @@
+{
+    "name": "kolenbrander/leveringsplanner",
+    "config": {
+        "vendor-dir": "vendor"
+    }
+}

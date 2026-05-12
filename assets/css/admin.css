@@ -1,0 +1,268 @@
+/* ───── Tabs ───── */
+.klp-tabs { margin-top: 12px; }
+.klp-tab-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #c3c4c7;
+  margin-bottom: 20px;
+}
+.klp-tab-nav a {
+  display: block;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  color: #555;
+  background: #f6f7f7;
+  border: 1px solid #c3c4c7;
+  border-bottom: none;
+  margin-bottom: -2px;
+  margin-right: 4px;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.15s ease;
+}
+.klp-tab-nav a:hover { background: #fff; color: #1d2327; }
+.klp-tab-nav a.klp-tab-active {
+  background: #fff;
+  color: #1d2327;
+  border-color: #c3c4c7 #c3c4c7 #fff;
+  position: relative;
+  top: 1px;
+}
+.klp-tab-panel { display: none; }
+.klp-tab-panel.klp-panel-active { display: block; }
+
+/* ───── Sections ───── */
+.klp-section {
+  background: #fff;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+.klp-section h2 {
+  margin-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f1;
+  font-size: 16px;
+}
+
+/* ───── Danger Button ───── */
+.klp-btn-danger {
+  color: #b32d2e !important;
+  border-color: #b32d2e !important;
+}
+.klp-btn-danger:hover { background: #b32d2e !important; color: #fff !important; }
+
+/* ───── Status Badge ───── */
+.klp-status-ok { color: #00a32a; font-weight: 700; }
+
+/* ───── Closed Dates Repeater ───── */
+.klp-closed-dates-repeater { margin-top: 4px; }
+.klp-date-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 6px 6px 0;
+}
+.klp-date-input {
+  width: 120px !important;
+  text-align: center;
+  font-weight: 600;
+}
+.klp-remove-date {
+  color: #b32d2e !important;
+  line-height: 1 !important;
+  font-size: 18px !important;
+  padding: 0 8px !important;
+  min-height: 28px;
+}
+
+/* ──── Calendar Container ──── */
+#klp-admin-calendar { max-width: 820px; }
+
+/* ──── Calendar Nav ──── */
+#klp-cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.klp-nav-btn { min-width: auto !important; }
+#klp-cal-nav > span:first-of-type { margin-right: auto; }
+#klp-cal-nav > span:last-of-type { margin-left: auto; }
+
+/* ──── Legend ──── */
+.klp-legend {
+  margin-bottom: 14px;
+  font-size: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  padding: 8px 14px;
+  background: #f6f7f7;
+  border-radius: 4px;
+}
+.klp-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.klp-dot-green { background: #46b450; }
+.klp-dot-red { background: #dc3232; }
+.klp-dot-grey { background: #999; }
+.klp-dot-orange { background: #f0a030; }
+
+/* ──── YEAR OVERVIEW ──── */
+.klp-year-grid { display: flex; flex-direction: column; gap: 10px; }
+.klp-year-row { display: flex; gap: 10px; }
+.klp-mini-month {
+  flex: 1;
+  min-width: 0;
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  padding: 10px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.klp-mini-month:hover {
+  border-color: #2271b1;
+  box-shadow: 0 2px 8px rgba(34,113,177,.12);
+  transform: translateY(-1px);
+}
+.klp-mini-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.klp-mini-current { color: #2271b1; }
+.klp-mini-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  margin-bottom: 2px;
+}
+.klp-mini-dname {
+  text-align: center;
+  font-size: 8px;
+  color: #999;
+  font-weight: 600;
+}
+.klp-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+}
+.klp-mini-empty { padding-bottom: 100%; }
+.klp-mini-dot {
+  padding-bottom: 100%;
+  border-radius: 3px;
+  position: relative;
+}
+.klp-mini-available { background: #c8e6c9; }
+.klp-mini-full { background: #ffcdd2; }
+.klp-mini-closed { background: #e0e0e0; }
+.klp-mini-user-closed { background: #ffe0b2; }
+
+/* ──── MONTH DETAIL VIEW ──── */
+.klp-cal-year { /* marker for year view */ }
+#klp-cal-grid:not(.klp-cal-year) {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.klp-cal-row { display: flex; gap: 2px; }
+.klp-cal-cell {
+  width: 56px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border-radius: 4px;
+  position: relative;
+  user-select: none;
+  font-weight: 500;
+}
+.klp-cal-dayname {
+  font-weight: 700;
+  color: #555;
+  background: #f0f0f1;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.klp-cal-wnum {
+  width: 32px;
+  font-size: 10px;
+  color: #999;
+  font-weight: 400;
+}
+.klp-cal-empty { background: transparent; }
+.klp-cal-available {
+  background: #d4edda;
+  color: #155724;
+  font-weight: 600;
+}
+.klp-cal-full {
+  background: #f8d7da;
+  color: #721c24;
+  font-weight: 600;
+}
+.klp-cal-closed {
+  background: #e2e3e5;
+  color: #6c757d;
+}
+.klp-cal-user-closed {
+  background: #fde8c8;
+  color: #8a6100;
+  font-weight: 600;
+}
+.klp-cal-today {
+  box-shadow: inset 0 0 0 2px #2271b1;
+}
+
+/* ──── Clickable cells ──── */
+.klp-cal-clickable {
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.klp-cal-clickable:hover {
+  transform: scale(1.12);
+  box-shadow: 0 2px 10px rgba(0,0,0,.18);
+  z-index: 2;
+  position: relative;
+}
+
+/* ──── Status bar (bottom accent) ──── */
+.klp-cal-bar {
+  position: absolute;
+  bottom: 2px;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.klp-cal-available .klp-bar-available { opacity: 1; background: #46b450; }
+.klp-cal-full .klp-bar-full { opacity: 1; background: #dc3232; }
+.klp-cal-closed .klp-bar-closed { opacity: 1; background: #999; }
+.klp-cal-user-closed .klp-bar-user-closed { opacity: 1; background: #f0a030; }
+
+/* ──── Feedback ──── */
+#klp-cal-feedback {
+  margin-top: 10px;
+  font-style: italic;
+  transition: color 0.2s;
+}
